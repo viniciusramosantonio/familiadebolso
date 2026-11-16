@@ -44,8 +44,11 @@
   .passo .ic{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:12px}
   .passo h3{font-size:22px;margin-bottom:4px}
   .passo p{color:var(--cinza);font-weight:700;font-size:16px}
-  .amostra{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:36px;align-items:center}
-  .amostra img{width:100%;border-radius:28px;border:10px solid #fff;box-shadow:0 20px 40px #2B2D4225;transform:rotate(-2deg)}
+  .amostra{display:grid;grid-template-columns:minmax(0,520px) 1fr;gap:36px;align-items:center}
+  .acab{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .acab figure{background:#fff;border-radius:24px;padding:8px;box-shadow:0 14px 30px #2B2D421f}
+  .acab img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:18px;display:block}
+  .acab figcaption{text-align:center;font-family:Fredoka;font-weight:600;font-size:17px;padding:8px 0 4px}
   .amostra ul{list-style:none;margin-top:12px}
   .amostra li{padding:8px 0 8px 34px;position:relative;font-weight:700}
   .amostra li::before{content:"✓";position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--amarelo);text-align:center;font-size:14px;line-height:24px}
@@ -79,7 +82,7 @@
   .card a{font-weight:800;font-size:14px;color:var(--terra);text-decoration:none}
   .aviso{margin-top:14px;font-size:14px;color:var(--cinza);font-weight:700}
   .flutua{position:fixed;right:16px;bottom:16px;z-index:5;box-shadow:0 10px 24px #2B2D4240}
-  @media (max-width:640px){.amostra{grid-template-columns:1fr}.amostra img{max-width:260px;margin:0 auto;display:block}header .btn{display:none}}
+  @media (max-width:640px){.amostra{grid-template-columns:1fr}header .btn{display:none}}
 </style>
 </head>
 <body>
@@ -124,10 +127,13 @@
 
 <section style="background:var(--areia)">
   <div class="wrap amostra">
-    <img src="img/amostra.png" alt="Miniatura real de uma senhora de óculos, impressa em 3D, na palma da mão">
+    <div class="acab">
+      <figure><img src="img/vovo-cinza.webp" alt="Miniatura chibi de vovó de óculos em resina cinza"><figcaption>Cinza · R$ 149</figcaption></figure>
+      <figure><img src="img/vovo-pintada.webp" alt="A mesma miniatura de vovó pintada à mão"><figcaption>Pintada à mão · R$ 229</figcaption></figure>
+    </div>
     <div>
-      <h2>Do tamanho da palma da mão</h2>
-      <p style="font-weight:700;color:var(--cinza)">Essa é uma amostra real, na cor da resina. Cada figura tem os detalhes que fazem a pessoa ser ela: os óculos, o cabelo, a roupa, aquele jeitinho.</p>
+      <h2>Cinza ou pintada à mão</h2>
+      <p style="font-weight:700;color:var(--cinza)">A mesma vovó nos dois acabamentos. Cada figura tem os detalhes que fazem a pessoa ser ela: os óculos, o cabelo, a roupa, aquele jeitinho.</p>
       <ul><li>~7 cm de altura, com base</li><li>Feita a partir das suas fotos</li><li>Prévia para aprovar antes de imprimir</li><li>Cinza ou pintada à mão</li></ul>
     </div>
   </div>
