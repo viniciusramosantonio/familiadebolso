@@ -92,10 +92,10 @@
   <div class="wrap">
     <h2>Como funciona</h2>
     <div class="passos">
-      <div class="passo"><div class="ic" style="background:#F6C453">📸</div><h3>1. Você manda as fotos</h3><p>Uma de frente e uma de lado de cada pessoa, pelo WhatsApp.</p></div>
-      <div class="passo"><div class="ic" style="background:#F4A6A6">🖥️</div><h3>2. Prévia em 3D</h3><p>Você vê e aprova o modelo antes de imprimir.</p></div>
-      <div class="passo"><div class="ic" style="background:#9FC9A2">🖨️</div><h3>3. Impressão e acabamento</h3><p>Impressa em resina e finalizada à mão: cinza ou pintada.</p></div>
-      <div class="passo"><div class="ic" style="background:#E2725B">🎁</div><h3>4. Chega pra você</h3><p>Entrega em mãos ou pelos Correios.</p></div>
+      <div class="passo"><div class="ic" style="background:#F6C453">📸</div><h3>1. Você manda a foto</h3><p>Uma de frente e uma de lado de cada pessoa, pelo WhatsApp.</p></div>
+      <div class="passo"><div class="ic" style="background:#F4A6A6">🖥️</div><h3>2. A gente gera o modelo</h3><p>Você recebe a prévia da sua miniatura em 3D.</p></div>
+      <div class="passo"><div class="ic" style="background:#9FC9A2">✅</div><h3>3. Você valida</h3><p>Pede ajustes até ficar a cara da pessoa. Sem pagar nada até aqui.</p></div>
+      <div class="passo"><div class="ic" style="background:#E2725B">🖨️</div><h3>4. Pagou, imprime</h3><p>Com o Pix feito, imprimimos, finalizamos à mão e entregamos.</p></div>
     </div>
   </div>
 </section>
@@ -120,7 +120,7 @@
       <tr><td>Casal</td><td>R$ 279</td><td>R$ 429</td></tr>
       <tr><td>Pet (adicional)</td><td>R$ 99</td><td>R$ 149</td></tr>
     </table>
-    <p class="obs">Reserva com 50% no Pix e o restante na entrega. Frete à parte.</p>
+    <p class="obs">Você só paga depois de aprovar o modelo. Pix ou cartão, frete à parte.</p>
   </div>
 </section>
 
@@ -147,7 +147,7 @@
     <details><summary>Quanto tempo leva?</summary><p>Cada miniatura leva cerca de um dia de trabalho. Por isso as vagas para o Natal são limitadas: reserve cedo.</p></details>
     <details><summary>Que fotos eu preciso mandar?</summary><p>Uma de frente e uma de lado de cada pessoa, com boa luz e o rosto bem visível. Se puder, conte um detalhe marcante (óculos, roupa favorita, um objeto).</p></details>
     <details><summary>E se eu não gostar?</summary><p>Antes de imprimir você recebe uma prévia em 3D e pode pedir ajustes. Só imprimimos depois da sua aprovação.</p></details>
-    <details><summary>Como pago?</summary><p>50% no Pix para reservar a vaga e o restante quando a miniatura ficar pronta.</p></details>
+    <details><summary>Como pago?</summary><p>Só depois de aprovar a prévia do modelo. Com o pagamento feito (Pix), a miniatura vai para a impressão.</p></details>
     <details><summary>Vocês entregam onde?</summary><p>Entrega em mãos combinada ou envio pelos Correios para todo o Brasil (frete à parte).</p></details>
   </div>
 </section>
@@ -175,7 +175,7 @@
     const n = +pessoas.value, pets = +document.getElementById("pets").value, a = acab.value, t = preco[a];
     const valor = Math.floor(n / 2) * t.casal + (n % 2) * t.p + pets * t.pet;
     document.getElementById("total").innerHTML = `${brl(valor)} <small>total</small>`;
-    document.getElementById("sinal").textContent = `Reserva: ${brl(valor / 2)} no Pix · restante na entrega`;
+    document.getElementById("sinal").textContent = `Você só paga depois de aprovar o modelo`;
     const msg = `Olá! Quero fazer uma Família de Bolso 🎁\n• Pessoas: ${n}\n• Pets: ${pets}\n• Acabamento: ${a === "cinza" ? "cinza" : "pintada à mão"}\n• Valor pelo site: ${brl(valor)}\nPosso mandar as fotos?`;
     document.getElementById("enviar").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
   }
