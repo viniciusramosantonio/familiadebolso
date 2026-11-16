@@ -110,6 +110,7 @@
   <section class="etapa" data-etapa="2">
     <h1>Envie as fotos</h1>
     <p class="sub">Uma foto de cada pessoa, de frente, com o rosto bem visível.</p>
+    <div class="msg info" id="avisoGrupo"></div>
     <div class="fotos" id="fotos"></div>
     <p class="dicas">📸 Dicas: boa luz (perto da janela), sem óculos escuros, rosto inteiro. A prévia usa até 4 fotos; se forem mais pessoas, você manda o resto no WhatsApp.</p>
     <div class="msg erro" id="erroFotos"></div>
@@ -199,6 +200,19 @@ function valor() {
   return (n >= 4 ? t.familia + (n - 4) * t.p : Math.floor(n / 2) * t.casal + (n % 2) * t.p) + pets * t.pet;
 }
 function temaAtual() { return TEMAS.find((t) => t.id === estado.tema); }
+// Temas com mais de uma pessoa: com menos fotos, a IA inventa quem falta.
+const minPessoas = (id) => id === "data-natal" ? 4 : id.startsWith("casal-") || id === "rotina-pai-filho" ? 2 : 1;
+function ajustarPessoas() {
+  const min = minPessoas(estado.tema);
+  if (+selP.value < min) { selP.value = String(min); pintarPreco(); }
+  avisarGrupo();
+}
+function avisarGrupo() {
+  const min = minPessoas(estado.tema), tem = estado.fotos.filter(Boolean).length;
+  mostrar("#avisoGrupo", min > 1 && tem < min
+    ? `Este tema é para ${min === 2 ? "duas pessoas" : min + " pessoas"}: mande uma foto de cada uma. Se faltar foto, a prévia inventa quem falta.`
+    : "");
+}
 function pintarTema() {
   const t = temaAtual();
   $("#temaNome").textContent = t.titulo;
@@ -207,7 +221,7 @@ function pintarTema() {
   atualizarZap();
 }
 $("#temas").innerHTML = TEMAS.map((t) => `<button type="button" data-id="${t.id}"><img loading="lazy" src="${t.id === "livre" ? "img/vovo-pintada.webp" : "img/temas/" + t.id + ".webp"}" alt="">${t.titulo}</button>`).join("");
-$("#temas").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; estado.tema = b.dataset.id; pintarTema(); $("#temas").classList.remove("aberto"); estado.previa = null; });
+$("#temas").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; estado.tema = b.dataset.id; pintarTema(); ajustarPessoas(); $("#temas").classList.remove("aberto"); estado.previa = null; });
 $("#trocar").addEventListener("click", () => $("#temas").classList.toggle("aberto"));
 function pintarPreco() { $("#preco").innerHTML = `${brl(valor())} <small>total</small>`; montarSlots(); atualizarZap(); }
 ["#pessoas", "#pets", "#acab"].forEach((s) => $(s).addEventListener("change", () => { estado.previa = null; pintarPreco(); }));
@@ -222,6 +236,7 @@ function montarSlots() {
       <input type="file" accept="image/*" data-i="${i}">
       <button class="x" type="button" data-x="${i}" aria-label="Remover foto">×</button>
     </label>`).join("");
+  avisarGrupo();
 }
 async function reduzir(file) {
   const bmp = await createImageBitmap(file);
@@ -300,7 +315,7 @@ $("#enviar").addEventListener("click", async () => {
   ir(5);
 });
 
-pintarTema(); pintarPreco(); ir(1);
+pintarTema(); pintarPreco(); ajustarPessoas(); ir(1);
 </script>
 </body>
 </html>
