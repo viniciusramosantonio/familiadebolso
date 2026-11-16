@@ -97,15 +97,26 @@
   a.card:hover{transform:translateY(-3px)}
   .card .quero{font-weight:800;font-size:14px;color:var(--terra)}
   .aviso{margin-top:14px;font-size:14px;color:var(--cinza);font-weight:700}
+  .ig{display:inline-flex;align-items:center;gap:8px;font-weight:800;text-decoration:none;color:var(--azul)}
+  .ig svg{width:26px;height:26px;flex:none}
+  .ig:hover{color:var(--terra)}
+  .topo-dir{display:flex;align-items:center;gap:18px}
+  .insta{background:#fff;border-radius:32px;padding:30px 26px;text-align:center;box-shadow:0 8px 24px #2B2D4212}
+  .insta h2{margin-bottom:8px}
+  .insta p{color:var(--cinza);font-weight:700;margin-bottom:18px}
+  .btn svg{width:22px;height:22px}
   .flutua{position:fixed;right:16px;bottom:16px;z-index:5;box-shadow:0 10px 24px #2B2D4240}
-  @media (max-width:640px){.amostra{grid-template-columns:1fr}header .btn{display:none}}
+  @media (max-width:640px){.amostra{grid-template-columns:1fr}header .btn{display:none}.ig span{display:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <a class="marca" href="#"><span id="logo1"></span>Família de Bolso</a>
-    <a class="btn" data-wa href="#">💬 Fazer pedido</a>
+    <div class="topo-dir">
+      <a class="ig" href="https://instagram.com/familiadebolso" target="_blank" rel="noopener" aria-label="Instagram @familiadebolso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg><span>@familiadebolso</span></a>
+      <a class="btn" data-wa href="#">💬 Fazer pedido</a>
+    </div>
   </header>
 </div>
 
@@ -211,6 +222,16 @@
     <details><summary>E se eu não gostar?</summary><p>Antes de imprimir você recebe uma prévia em 3D e pode pedir ajustes. Só imprimimos depois da sua aprovação.</p></details>
     <details><summary>Como pago?</summary><p>Só depois de aprovar a prévia do modelo. Com o pagamento feito (Pix), a miniatura vai para a impressão.</p></details>
     <details><summary>Vocês entregam onde?</summary><p>Entrega em mãos combinada ou envio pelos Correios para todo o Brasil (frete à parte).</p></details>
+  </div>
+</section>
+
+<section style="padding-top:10px">
+  <div class="wrap">
+    <div class="insta">
+      <h2>Acompanhe no Instagram</h2>
+      <p>Novos temas, bastidores da impressão e as miniaturas saindo da impressora.</p>
+      <a class="btn" href="https://instagram.com/familiadebolso" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Seguir @familiadebolso</a>
+    </div>
   </div>
 </section>
 
