@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pagamento · Família de Bolso</title>
+<meta name="theme-color" content="#E2725B">
+<link rel="icon" href="img/icone.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="marca.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+  :root{--creme:#FFF6EC;--areia:#F7E3CF;--terra:#E2725B;--terra2:#C65A44;--azul:#2B2D42;--cinza:#5B5E78;--verde:#3E8E5E}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Nunito,system-ui,sans-serif;background:var(--creme);color:var(--azul);line-height:1.5;font-size:17px;min-height:100vh}
+  h1,.marca{font-family:Fredoka,system-ui,sans-serif;line-height:1.1}
+  .wrap{max-width:520px;margin:0 auto;padding:0 16px 40px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .marca{display:flex;align-items:center;gap:8px;font-weight:700;font-size:20px;text-decoration:none;color:inherit}
+  .marca svg{width:40px;height:40px}
+  .ig{display:inline-flex;color:var(--azul)}
+  .ig svg{width:24px;height:24px}
+  h1{font-size:clamp(26px,6vw,34px);margin:8px 0 4px}
+  .sub{color:var(--cinza);font-weight:700;margin-bottom:16px}
+  .card{background:#fff;border-radius:24px;padding:20px;box-shadow:0 8px 24px #2B2D4212;margin-bottom:14px;text-align:center}
+  .valor{font-family:Fredoka;font-size:40px;font-weight:600}
+  .ped{color:var(--cinza);font-weight:800}
+  .passo{font-weight:800;margin:4px 0 12px}
+  .btn{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;background:var(--terra);color:#fff;font-family:Fredoka;font-weight:600;font-size:19px;padding:15px 24px;border-radius:999px;border:0;cursor:pointer}
+  .btn:hover{background:var(--terra2)}
+  .btn.ok{background:var(--verde)}
+  .codigo{margin-top:12px;font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-all;background:var(--creme);border-radius:14px;padding:10px;color:var(--cinza);text-align:left;user-select:all}
+  #qr{display:flex;justify-content:center;margin:6px 0}
+  #qr img,#qr svg{width:min(240px,70vw);height:auto;image-rendering:pixelated}
+  .dica{font-size:14px;color:var(--cinza);font-weight:700}
+  .erro{color:var(--terra2);font-weight:800}
+  .pago{font-family:Fredoka;font-size:24px;color:var(--verde)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="marca" href="./"><span id="logo"></span>Família de Bolso</a>
+    <a class="ig" href="https://instagram.com/familiadebolso" target="_blank" rel="noopener" aria-label="Instagram @familiadebolso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+  </header>
+
+  <div id="conteudo"><div class="card">Carregando seu pagamento…</div></div>
+</div>
+
+<script>
+const SUPA_URL = "https://uybqzetlkuketfqucjei.supabase.co";
+const SUPA_ANON = "sb_publishable_mR4eMLN4y_KAfgbFlH0hrA_yzsxQ7bs";
+document.getElementById("logo").innerHTML = logo();
+const caixa = document.getElementById("conteudo");
+const reais = (v) => "R$ " + v.toFixed(2).replace(".", ",");
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function erro(msg) {
+  caixa.innerHTML = `<div class="card"><p class="erro">${msg}</p><p class="dica" style="margin-top:8px">Fale com a gente pelo WhatsApp que a gente resolve 🙂</p></div>`;
+}
+
+async function carregar() {
+  const t = new URLSearchParams(location.search).get("t") || "";
+  if (!/^[a-f0-9]{32}$/.test(t)) return erro("Este link de pagamento está incompleto.");
+  let d;
+  try {
+    const r = await fetch(`${SUPA_URL}/functions/v1/pagar`, {
+      method: "POST", headers: { "Content-Type": "application/json", apikey: SUPA_ANON, Authorization: `Bearer ${SUPA_ANON}` },
+      body: JSON.stringify({ t }),
+    });
+    d = await r.json();
+    if (!r.ok) return erro(d.erro === "pedido cancelado" ? "Este pedido foi cancelado." : "Não encontramos este pagamento.");
+  } catch { return erro("Não deu para carregar agora. Tente de novo em instantes."); }
+
+  if (d.pago) {
+    caixa.innerHTML = `<h1>Pagamento recebido 🎉</h1><div class="card"><p class="pago">Pedido nº ${d.numero} pago</p><p class="dica" style="margin-top:8px">Sua Família de Bolso já está na fila de impressão. Obrigado, ${esc(d.nome)}!</p></div>`;
+    return;
+  }
+
+  caixa.innerHTML = `
+    <h1>Oi, ${esc(d.nome)}! Falta só o Pix 😊</h1>
+    <p class="sub">Assim que cair, sua miniatura vai para a impressão.</p>
+    <div class="card">
+      <div class="ped">Pedido nº ${d.numero}</div>
+      <div class="valor">${reais(d.valor)}</div>
+    </div>
+    <div class="card">
+      <p class="passo">1. Toque para copiar o código Pix</p>
+      <button class="btn" id="copiar">Copiar código Pix</button>
+      <div class="codigo" id="codigo">${esc(d.codigo)}</div>
+      <p class="dica" style="margin-top:12px">2. No app do banco: <b>Pix → Pix Copia e Cola</b> → cole e confirme.</p>
+    </div>
+    <div class="card">
+      <p class="passo">Pagando por outro aparelho? Escaneie o QR code</p>
+      <div id="qr"></div>
+    </div>
+    <p class="dica" style="text-align:center">Pagou? Pode mandar o comprovante no WhatsApp, se quiser.</p>`;
+
+  try {
+    const q = qrcode(0, "M"); q.addData(d.codigo); q.make();
+    document.getElementById("qr").innerHTML = q.createImgTag(8, 16, "QR code do Pix");
+  } catch { document.getElementById("qr").closest(".card").remove(); }
+
+  const btn = document.getElementById("copiar");
+  btn.onclick = async () => {
+    try { await navigator.clipboard.writeText(d.codigo); }
+    catch {
+      const s = getSelection(), r = document.createRange();
+      r.selectNodeContents(document.getElementById("codigo")); s.removeAllRanges(); s.addRange(r);
+      document.execCommand("copy");
+    }
+    btn.textContent = "Código copiado ✓"; btn.classList.add("ok");
+    setTimeout(() => { btn.textContent = "Copiar código Pix"; btn.classList.remove("ok"); }, 3000);
+  };
+}
+carregar();
+</script>
+</body>
+</html>
