@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
 <script src="marca.js"></script>
+<script src="temas.js"></script>
 <style>
   :root{--creme:#FFF6EC;--areia:#F7E3CF;--terra:#E2725B;--terra2:#C65A44;--azul:#2B2D42;--cinza:#5B5E78;--amarelo:#F6C453}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -66,6 +67,17 @@
   summary{font-weight:800;cursor:pointer}
   details p{margin-top:8px;color:var(--cinza);font-weight:700}
   footer{padding:40px 0 60px;text-align:center;color:var(--cinza);font-weight:700}
+  .sub{color:var(--cinza);font-weight:700;margin:-12px 0 18px}
+  .abas{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:none}
+  .abas button{flex:none;font:inherit;font-weight:800;font-size:15px;border:2px solid var(--terra);background:#fff;color:var(--terra);padding:8px 16px;border-radius:999px;cursor:pointer}
+  .abas button[aria-selected="true"]{background:var(--terra);color:#fff}
+  .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+  .card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 8px 22px #2B2D4214;display:flex;flex-direction:column}
+  .card img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--areia)}
+  .card div{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px}
+  .card b{font-family:Fredoka;font-weight:600;font-size:18px}
+  .card a{font-weight:800;font-size:14px;color:var(--terra);text-decoration:none}
+  .aviso{margin-top:14px;font-size:14px;color:var(--cinza);font-weight:700}
   .flutua{position:fixed;right:16px;bottom:16px;z-index:5;box-shadow:0 10px 24px #2B2D4240}
   @media (max-width:640px){.amostra{grid-template-columns:1fr}.amostra img{max-width:260px;margin:0 auto;display:block}header .btn{display:none}}
 </style>
@@ -97,6 +109,16 @@
       <div class="passo"><div class="ic" style="background:#9FC9A2">✅</div><h3>3. Você valida</h3><p>Pede ajustes até ficar a cara da pessoa. Sem pagar nada até aqui.</p></div>
       <div class="passo"><div class="ic" style="background:#E2725B">🖨️</div><h3>4. Pagou, imprime</h3><p>Com o Pix feito, imprimimos, finalizamos à mão e entregamos.</p></div>
     </div>
+  </div>
+</section>
+
+<section id="temas" style="padding-top:10px">
+  <div class="wrap">
+    <h2>Ideias de temas</h2>
+    <p class="sub">Profissão, esporte, rotina, casal… escolha um tema e a gente faz com o rosto de quem você ama.</p>
+    <div class="abas" id="abas" role="tablist"></div>
+    <div class="grade" id="grade"></div>
+    <p class="aviso">Imagens ilustrativas geradas por IA. Cada miniatura é modelada a partir das suas fotos.</p>
   </div>
 </section>
 
@@ -181,6 +203,23 @@
   }
   const geral = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Olá! Vi o site da Família de Bolso e quero saber mais 😊")}`;
   document.querySelectorAll("[data-wa]").forEach(a => { if (a.id !== "enviar") a.href = geral; a.target = "_blank"; a.rel = "noopener"; });
+  // Galeria de temas
+  const T = window.TEMAS || [];
+  if (!T.length) document.getElementById("temas").style.display = "none";
+  const cats = ["Todos", ...new Set(T.map(t => t.cat))];
+  const abas = document.getElementById("abas"), grade = document.getElementById("grade");
+  function mostrar(cat) {
+    [...abas.children].forEach(b => b.setAttribute("aria-selected", b.textContent === cat));
+    grade.innerHTML = T.filter(t => cat === "Todos" || t.cat === cat).map(t => {
+      const m = encodeURIComponent(`Olá! Quero uma Família de Bolso no tema "${t.titulo}" 🎁 Posso mandar as fotos?`);
+      return `<div class="card"><img loading="lazy" src="img/temas/${t.id}.webp" alt="Miniatura chibi tema ${t.titulo}">
+        <div><b>${t.titulo}</b><a href="https://wa.me/${WHATSAPP}?text=${m}" target="_blank" rel="noopener">Quero esse tema →</a></div></div>`;
+    }).join("");
+  }
+  abas.innerHTML = cats.map(c => `<button role="tab">${c}</button>`).join("");
+  abas.addEventListener("click", e => { if (e.target.tagName === "BUTTON") mostrar(e.target.textContent); });
+  mostrar("Todos");
+
   ["pessoas", "pets", "acab"].forEach(id => document.getElementById(id).addEventListener("change", calcular));
   calcular();
 </script>
