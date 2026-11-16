@@ -79,7 +79,9 @@
   .card img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--areia)}
   .card div{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px}
   .card b{font-family:Fredoka;font-weight:600;font-size:18px}
-  .card a{font-weight:800;font-size:14px;color:var(--terra);text-decoration:none}
+  a.card{text-decoration:none;color:inherit;transition:transform .15s}
+  a.card:hover{transform:translateY(-3px)}
+  .card .quero{font-weight:800;font-size:14px;color:var(--terra)}
   .aviso{margin-top:14px;font-size:14px;color:var(--cinza);font-weight:700}
   .flutua{position:fixed;right:16px;bottom:16px;z-index:5;box-shadow:0 10px 24px #2B2D4240}
   @media (max-width:640px){.amostra{grid-template-columns:1fr}header .btn{display:none}}
@@ -98,7 +100,7 @@
     <span class="tag">🎄 presente de Natal</span>
     <h1>Sua família<br><span>em miniatura</span></h1>
     <p>Figuras personalizadas de ~4 cm feitas a partir das suas fotos, a partir de R$ 49. Vó, vô, casal, filhos e até o pet.</p>
-    <a class="btn" href="#orcamento">Quero a minha</a>
+    <a class="btn" href="pedido.html">Quero a minha</a>
     <div class="familia" id="familia"></div>
   </div>
 </div>
@@ -165,7 +167,8 @@
       </div>
       <div class="total" id="total"></div>
       <p style="font-weight:800;margin-bottom:20px" id="sinal"></p>
-      <a class="btn claro" id="enviar" data-wa href="#">💬 Enviar pedido pelo WhatsApp</a>
+      <a class="btn claro" href="pedido.html">✨ Fazer pedido e ver a prévia</a>
+      <a class="btn" id="enviar" data-wa href="#" style="background:transparent;border:2px solid #fff;margin-top:10px">💬 Prefiro o WhatsApp</a>
     </div>
   </div>
 </section>
@@ -218,9 +221,8 @@
   function mostrar(cat) {
     [...abas.children].forEach(b => b.setAttribute("aria-selected", b.textContent === cat));
     grade.innerHTML = T.filter(t => cat === "Todos" || t.cat === cat).map(t => {
-      const m = encodeURIComponent(`Olá! Quero uma Família de Bolso no tema "${t.titulo}" 🎁 Posso mandar as fotos?`);
-      return `<div class="card"><img loading="lazy" src="img/temas/${t.id}.webp" alt="Miniatura chibi tema ${t.titulo}">
-        <div><b>${t.titulo}</b><a href="https://wa.me/${WHATSAPP}?text=${m}" target="_blank" rel="noopener">Quero esse tema →</a></div></div>`;
+      return `<a class="card" href="pedido.html?tema=${t.id}"><img loading="lazy" src="img/temas/${t.id}.webp" alt="Miniatura chibi tema ${t.titulo}">
+        <div><b>${t.titulo}</b><span class="quero">Quero esse tema →</span></div></a>`;
     }).join("");
   }
   abas.innerHTML = cats.map(c => `<button role="tab">${c}</button>`).join("");

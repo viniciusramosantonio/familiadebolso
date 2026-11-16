@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fazer pedido · Família de Bolso</title>
+<meta name="description" content="Monte sua miniatura: escolha o tema, envie a foto e veja a prévia na hora.">
+<meta name="theme-color" content="#E2725B">
+<link rel="icon" href="img/icone.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="marca.js"></script>
+<script src="temas.js"></script>
+<style>
+  :root{--creme:#FFF6EC;--areia:#F7E3CF;--terra:#E2725B;--terra2:#C65A44;--azul:#2B2D42;--cinza:#5B5E78;--amarelo:#F6C453;--verde:#3E8E5E}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Nunito,system-ui,sans-serif;background:var(--creme);color:var(--azul);line-height:1.5;font-size:17px;min-height:100vh}
+  h1,h2,h3,.marca{font-family:Fredoka,system-ui,sans-serif;line-height:1.1}
+  .wrap{max-width:720px;margin:0 auto;padding:0 16px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .marca{display:flex;align-items:center;gap:8px;font-weight:700;font-size:20px;text-decoration:none;color:inherit}
+  .marca svg{width:40px;height:40px}
+  .zap{font-weight:800;font-size:14px;color:var(--terra);text-decoration:none}
+  .barra{display:flex;gap:6px;margin:6px 0 18px}
+  .barra span{flex:1;height:8px;border-radius:99px;background:var(--areia)}
+  .barra span.on{background:var(--terra)}
+  .etapa{display:none;animation:entra .25s ease}
+  .etapa.ativa{display:block}
+  @keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h1{font-size:clamp(28px,6vw,38px);margin-bottom:6px}
+  .sub{color:var(--cinza);font-weight:700;margin-bottom:18px}
+  .card{background:#fff;border-radius:24px;padding:18px;box-shadow:0 8px 24px #2B2D4212;margin-bottom:14px}
+  label{font-weight:800;font-size:15px;display:block;margin-bottom:6px}
+  select,input,textarea{width:100%;font:inherit;font-weight:700;padding:12px 14px;border-radius:14px;border:2px solid var(--areia);color:var(--azul);background:#fff}
+  select:focus,input:focus,textarea:focus{outline:none;border-color:var(--terra)}
+  .linha{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+  .tema-atual{display:flex;gap:14px;align-items:center}
+  .tema-atual img{width:96px;height:96px;border-radius:18px;object-fit:cover;background:var(--areia);flex:none}
+  .tema-atual b{font-family:Fredoka;font-size:22px;font-weight:600;display:block}
+  .trocar{background:none;border:0;color:var(--terra);font:inherit;font-weight:800;cursor:pointer;padding:0}
+  .temas{display:none;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:14px;max-height:340px;overflow:auto}
+  .temas.aberto{display:grid}
+  .temas button{border:2px solid transparent;background:var(--creme);border-radius:14px;padding:4px;cursor:pointer;font:inherit;font-size:12px;font-weight:800;color:var(--azul)}
+  .temas button img{width:100%;aspect-ratio:1;border-radius:10px;display:block;object-fit:cover}
+  .temas button[aria-pressed="true"]{border-color:var(--terra)}
+  .preco{font-family:Fredoka;font-size:30px;font-weight:600}
+  .preco small{font-family:Nunito;font-size:15px;color:var(--cinza);font-weight:800}
+  .acoes{display:flex;gap:10px;margin:18px 0 30px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--terra);color:#fff;font-family:Fredoka;font-weight:600;font-size:18px;padding:14px 24px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;flex:1;min-width:160px}
+  .btn:hover{background:var(--terra2)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.sec{background:#fff;color:var(--azul);border:2px solid var(--areia);flex:0 1 auto}
+  .btn.zapbtn{background:#25D366}
+  .fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+  .slot{position:relative;border:2px dashed #E2725B88;border-radius:20px;aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;background:#fff;cursor:pointer;overflow:hidden;font-weight:800;font-size:14px;color:var(--cinza)}
+  .slot .ic{font-size:34px}
+  .slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .slot input{display:none}
+  .slot .x{position:absolute;top:6px;right:6px;z-index:2;background:#fff;border-radius:50%;width:28px;height:28px;border:0;font-weight:800;cursor:pointer;display:none}
+  .slot.cheio .x{display:block}
+  .dicas{font-size:14px;color:var(--cinza);font-weight:700;margin-top:10px}
+  .previa{position:relative;border-radius:24px;overflow:hidden;background:var(--areia);aspect-ratio:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}
+  .previa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .selo{position:absolute;left:12px;top:12px;background:var(--amarelo);font-family:Fredoka;font-weight:600;font-size:13px;padding:4px 10px;border-radius:10px;z-index:2}
+  .girando{width:64px;height:64px;border-radius:50%;border:6px solid #fff;border-top-color:var(--terra);animation:gira 1s linear infinite;margin:0 auto 14px}
+  @keyframes gira{to{transform:rotate(360deg)}}
+  .aviso{font-size:13px;color:var(--cinza);font-weight:700;margin-top:10px}
+  .msg{border-radius:14px;padding:12px 14px;font-weight:800;font-size:15px;margin-top:12px;display:none}
+  .msg.on{display:block}
+  .msg.erro{background:#FDE3DD;color:#9B2C17}
+  .msg.info{background:#FFF1C7;color:#6B4E00}
+  .check{display:flex;gap:10px;align-items:flex-start;font-weight:700;font-size:14px}
+  .check input{width:22px;height:22px;flex:none;margin-top:2px}
+  details{background:#fff;border-radius:16px;padding:12px 16px;margin-bottom:8px}
+  summary{font-weight:800;cursor:pointer}
+  details p{margin-top:6px;color:var(--cinza);font-weight:700;font-size:15px}
+  .resumo{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-weight:700}
+  .resumo span:nth-child(even){text-align:right;font-weight:800}
+  .ok{text-align:center;padding:20px 0}
+  .ok .grande{font-size:64px}
+  .num{font-family:Fredoka;font-size:44px;font-weight:700;color:var(--terra)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="marca" href="./"><span id="logo"></span>Família de Bolso</a>
+    <a class="zap" id="zapTopo" target="_blank" rel="noopener">Prefiro o WhatsApp</a>
+  </header>
+  <div class="barra" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+
+  <!-- 1. Escolha -->
+  <section class="etapa" data-etapa="1">
+    <h1>Monte sua miniatura</h1>
+    <p class="sub">Escolha o tema e quem vai virar miniatura.</p>
+    <div class="card">
+      <div class="tema-atual"><img id="temaImg" alt=""><div><span class="sub" style="margin:0;font-size:14px">Tema</span><b id="temaNome">Do meu jeito</b><button class="trocar" id="trocar" type="button">trocar tema ▾</button></div></div>
+      <div class="temas" id="temas"></div>
+    </div>
+    <div class="card linha">
+      <div><label for="pessoas">Pessoas</label><select id="pessoas"></select></div>
+      <div><label for="pets">Pets</label><select id="pets"><option value="0">Nenhum</option><option value="1">1 pet</option><option value="2">2 pets</option></select></div>
+      <div><label for="acab">Acabamento</label><select id="acab"><option value="cinza">Cinza</option><option value="pintada" selected>Pintada à mão</option></select></div>
+    </div>
+    <div class="card"><div class="preco" id="preco"></div><div class="aviso">~4 cm cada · você só paga depois de aprovar o modelo · frete à parte</div></div>
+    <div class="acoes"><button class="btn" data-ir="2">Continuar →</button></div>
+  </section>
+
+  <!-- 2. Fotos -->
+  <section class="etapa" data-etapa="2">
+    <h1>Envie as fotos</h1>
+    <p class="sub">Uma foto de cada pessoa, de frente, com o rosto bem visível.</p>
+    <div class="fotos" id="fotos"></div>
+    <p class="dicas">📸 Dicas: boa luz (perto da janela), sem óculos escuros, rosto inteiro. A prévia usa até 4 fotos; se forem mais pessoas, você manda o resto no WhatsApp.</p>
+    <div class="msg erro" id="erroFotos"></div>
+    <div class="acoes"><button class="btn sec" data-ir="1">← Voltar</button><button class="btn" id="paraPrevia">Ver minha prévia ✨</button></div>
+  </section>
+
+  <!-- 3. Prévia -->
+  <section class="etapa" data-etapa="3">
+    <h1>Sua prévia</h1>
+    <p class="sub">Um rascunho feito por IA para você ter uma ideia. O modelo final é feito à mão e você aprova antes de pagar.</p>
+    <div class="previa" id="previa"><div><div class="girando"></div><b>Criando sua miniatura…</b><div class="aviso">leva uns 20 segundos</div></div></div>
+    <div class="msg info" id="msgPrevia"></div>
+    <div class="acoes">
+      <button class="btn sec" data-ir="2">← Trocar fotos</button>
+      <button class="btn sec" id="outra">↻ Gerar outra</button>
+      <button class="btn" data-ir="4">Gostei, continuar →</button>
+    </div>
+    <details><summary>A miniatura vai ficar igual à prévia?</summary><p>A prévia é um rascunho automático. O modelo de verdade é ajustado à mão a partir das suas fotos, e você recebe para aprovar (e pedir ajustes) antes de pagar.</p></details>
+    <details><summary>Qual o tamanho?</summary><p>Cerca de 4 cm de altura cada pessoa, com base. Cabe na palma da mão.</p></details>
+    <details><summary>Quando eu pago?</summary><p>Só depois de aprovar o modelo. Aí é Pix, e a miniatura vai para a impressão.</p></details>
+  </section>
+
+  <!-- 4. Dados -->
+  <section class="etapa" data-etapa="4">
+    <h1>Quase lá!</h1>
+    <p class="sub">Seus dados para a gente te mandar o modelo para aprovar.</p>
+    <div class="card linha">
+      <div><label for="nome">Seu nome</label><input id="nome" autocomplete="name" maxlength="80"></div>
+      <div><label for="whats">WhatsApp (com DDD)</label><input id="whats" inputmode="tel" autocomplete="tel" placeholder="(11) 91234-5678" maxlength="20"></div>
+      <div><label for="cidade">Cidade</label><input id="cidade" autocomplete="address-level2" maxlength="80"></div>
+      <div><label for="cep">CEP (para o frete)</label><input id="cep" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9"></div>
+    </div>
+    <div class="card"><label for="obs">Observações (opcional)</label><textarea id="obs" rows="3" maxlength="1000" placeholder="Ex.: a vó sempre usa um colar de pérolas; o pet é um vira-lata caramelo…"></textarea></div>
+    <div class="card"><div class="resumo" id="resumo"></div></div>
+    <label class="check"><input type="checkbox" id="lgpd"> Autorizo o uso das minhas fotos só para criar esta miniatura. Elas são apagadas em até 60 dias após a entrega.</label>
+    <div class="msg erro" id="erroDados"></div>
+    <div class="acoes"><button class="btn sec" data-ir="3">← Voltar</button><button class="btn" id="enviar">Enviar pedido</button></div>
+  </section>
+
+  <!-- 5. Pronto -->
+  <section class="etapa" data-etapa="5">
+    <div class="ok">
+      <div class="grande">🎉</div>
+      <h1>Pedido recebido!</h1>
+      <div class="num" id="numero"></div>
+      <p class="sub" style="margin-top:8px">Em até 2 dias você recebe o modelo no WhatsApp para aprovar. Para agilizar, mande uma mensagem agora:</p>
+      <div class="acoes" style="justify-content:center"><a class="btn zapbtn" id="zapFim" target="_blank" rel="noopener">💬 Abrir WhatsApp</a></div>
+      <a class="zap" href="./">← voltar ao site</a>
+    </div>
+  </section>
+</div>
+
+<script>
+/* >>> CONFIGURAÇÃO (preenchida quando o backend estiver no ar) */
+const SUPA_URL = "";
+const SUPA_ANON = "";
+const WHATSAPP = "5511976972589";
+/* <<< */
+
+const $ = (s) => document.querySelector(s);
+$("#logo").innerHTML = logo();
+const TEMAS = [{ id: "livre", titulo: "Do meu jeito", cat: "" }, ...(window.TEMAS || [])];
+const PRECO = { cinza: { p: 49, casal: 89, familia: 169, pet: 39 }, pintada: { p: 89, casal: 159, familia: 299, pet: 69 } };
+const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const store = { get(k) { try { return sessionStorage.getItem(k); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, v); } catch {} } };
+
+let sessao = store.get("fdb_sessao");
+if (!sessao) { sessao = Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(36).padStart(2, "0")).join("").replace(/[^a-z0-9]/g, "").slice(0, 24).padEnd(16, "x"); store.set("fdb_sessao", sessao); }
+
+const estado = { tema: new URLSearchParams(location.search).get("tema") || "livre", fotos: [], previa: null };
+if (!TEMAS.some((t) => t.id === estado.tema)) estado.tema = "livre";
+
+/* ---------- navegação ---------- */
+function ir(n) {
+  document.querySelectorAll(".etapa").forEach((e) => e.classList.toggle("ativa", e.dataset.etapa == n));
+  document.querySelectorAll(".barra span").forEach((s, i) => s.classList.toggle("on", i < n));
+  if (n == 4) montarResumo();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+document.querySelectorAll("[data-ir]").forEach((b) => b.addEventListener("click", () => ir(b.dataset.ir)));
+
+/* ---------- etapa 1 ---------- */
+const selP = $("#pessoas");
+selP.innerHTML = [1, 2, 3, 4, 5, 6].map((n) => `<option value="${n}">${n === 1 ? "1 pessoa" : n === 2 ? "Casal (2)" : n + " pessoas"}</option>`).join("");
+function valor() {
+  const n = +selP.value, pets = +$("#pets").value, t = PRECO[$("#acab").value];
+  return (n >= 4 ? t.familia + (n - 4) * t.p : Math.floor(n / 2) * t.casal + (n % 2) * t.p) + pets * t.pet;
+}
+function temaAtual() { return TEMAS.find((t) => t.id === estado.tema); }
+function pintarTema() {
+  const t = temaAtual();
+  $("#temaNome").textContent = t.titulo;
+  $("#temaImg").src = t.id === "livre" ? "img/vovo-pintada.webp" : `img/temas/${t.id}.webp`;
+  document.querySelectorAll("#temas button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.id === t.id));
+  atualizarZap();
+}
+$("#temas").innerHTML = TEMAS.map((t) => `<button type="button" data-id="${t.id}"><img loading="lazy" src="${t.id === "livre" ? "img/vovo-pintada.webp" : "img/temas/" + t.id + ".webp"}" alt="">${t.titulo}</button>`).join("");
+$("#temas").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; estado.tema = b.dataset.id; pintarTema(); $("#temas").classList.remove("aberto"); estado.previa = null; });
+$("#trocar").addEventListener("click", () => $("#temas").classList.toggle("aberto"));
+function pintarPreco() { $("#preco").innerHTML = `${brl(valor())} <small>total</small>`; montarSlots(); atualizarZap(); }
+["#pessoas", "#pets", "#acab"].forEach((s) => $(s).addEventListener("change", () => { estado.previa = null; pintarPreco(); }));
+
+/* ---------- etapa 2: fotos ---------- */
+function montarSlots() {
+  const n = Math.min(4, +selP.value);
+  estado.fotos.length = Math.min(estado.fotos.length, n);
+  $("#fotos").innerHTML = Array.from({ length: n }, (_, i) => `
+    <label class="slot ${estado.fotos[i] ? "cheio" : ""}">
+      ${estado.fotos[i] ? `<img src="data:image/jpeg;base64,${estado.fotos[i]}" alt="Foto ${i + 1}">` : `<span class="ic">📷</span>Foto da pessoa ${i + 1}<br><small>toque para escolher</small>`}
+      <input type="file" accept="image/*" data-i="${i}">
+      <button class="x" type="button" data-x="${i}" aria-label="Remover foto">×</button>
+    </label>`).join("");
+}
+async function reduzir(file) {
+  const bmp = await createImageBitmap(file);
+  const lado = 768, k = Math.min(1, lado / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.85).split(",")[1];
+}
+$("#fotos").addEventListener("change", async (e) => {
+  const inp = e.target; if (!inp.files?.[0]) return;
+  try { estado.fotos[+inp.dataset.i] = await reduzir(inp.files[0]); estado.previa = null; montarSlots(); }
+  catch { mostrar("#erroFotos", "Não consegui abrir essa imagem. Tente outra foto (JPG ou PNG)."); }
+});
+$("#fotos").addEventListener("click", (e) => { if (e.target.dataset.x !== undefined) { e.preventDefault(); estado.fotos[+e.target.dataset.x] = undefined; estado.previa = null; montarSlots(); } });
+function mostrar(sel, txt) { const m = $(sel); m.textContent = txt; m.classList.toggle("on", !!txt); }
+$("#paraPrevia").addEventListener("click", () => {
+  const fotos = estado.fotos.filter(Boolean);
+  if (!fotos.length) return mostrar("#erroFotos", "Envie pelo menos uma foto para ver a prévia.");
+  mostrar("#erroFotos", ""); ir(3); if (!estado.previa) gerar();
+});
+
+/* ---------- etapa 3: prévia ---------- */
+const carregando = `<div><div class="girando"></div><b>Criando sua miniatura…</b><div class="aviso">leva uns 20 segundos</div></div>`;
+async function gerar() {
+  mostrar("#msgPrevia", ""); $("#outra").disabled = true; $("#previa").innerHTML = carregando;
+  if (!SUPA_URL) { $("#previa").innerHTML = `<div><b>Prévia automática em breve 🙂</b><div class="aviso">Siga para enviar o pedido: você recebe o modelo para aprovar no WhatsApp.</div></div>`; return; }
+  try {
+    const r = await fetch(`${SUPA_URL}/functions/v1/previa`, {
+      method: "POST", headers: { "Content-Type": "application/json", apikey: SUPA_ANON, Authorization: `Bearer ${SUPA_ANON}` },
+      body: JSON.stringify({ sessao, tema: estado.tema, acabamento: $("#acab").value, fotos: estado.fotos.filter(Boolean) }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 429) { $("#previa").innerHTML = estado.previaImg ? `<span class="selo">rascunho IA</span><img src="${estado.previaImg}" alt="Prévia">` : `<div><b>Limite de prévias de hoje atingido</b><div class="aviso">Sem problema: siga com o pedido e você recebe o modelo para aprovar.</div></div>`; return mostrar("#msgPrevia", "Você já usou as prévias de hoje. Siga com o pedido que a gente faz o modelo para você aprovar."); }
+    if (!r.ok || !d.imagem) throw new Error(d.erro || r.status);
+    estado.previa = d.arquivo; estado.previaImg = `data:${d.tipo};base64,${d.imagem}`;
+    $("#previa").innerHTML = `<span class="selo">rascunho IA</span><img src="${estado.previaImg}" alt="Prévia da sua miniatura">`;
+    $("#outra").disabled = d.restantes <= 0;
+    if (d.restantes <= 0) mostrar("#msgPrevia", "Essa foi a última prévia de hoje. O modelo final é ajustado à mão, então pode seguir tranquilo!");
+  } catch (e) {
+    $("#previa").innerHTML = `<div><b>Não consegui gerar a prévia agora 😕</b><div class="aviso">Pode tentar de novo ou seguir com o pedido: o modelo de verdade é feito à mão e você aprova antes de pagar.</div></div>`;
+    $("#outra").disabled = false;
+  }
+}
+$("#outra").addEventListener("click", gerar);
+
+/* ---------- etapa 4: dados ---------- */
+function montarResumo() {
+  const n = +selP.value, pets = +$("#pets").value;
+  $("#resumo").innerHTML = `<span>Tema</span><span>${temaAtual().titulo}</span><span>Pessoas</span><span>${n}</span>${pets ? `<span>Pets</span><span>${pets}</span>` : ""}<span>Acabamento</span><span>${$("#acab").value === "cinza" ? "Cinza" : "Pintada à mão"}</span><span>Total</span><span>${brl(valor())}</span><span>Pagamento</span><span>depois de aprovar</span>`;
+}
+$("#cep").addEventListener("input", (e) => { const d = e.target.value.replace(/\D/g, "").slice(0, 8); e.target.value = d.length > 5 ? d.slice(0, 5) + "-" + d.slice(5) : d; });
+function textoZap(numero) {
+  const n = +selP.value, pets = +$("#pets").value;
+  return `Olá! ${numero ? `Fiz o pedido nº ${numero} na Família de Bolso` : "Quero fazer uma Família de Bolso"} 🎁\n• Tema: ${temaAtual().titulo}\n• Pessoas: ${n}${pets ? `\n• Pets: ${pets}` : ""}\n• Acabamento: ${$("#acab").value === "cinza" ? "cinza" : "pintada à mão"}\n• Valor: ${brl(valor())}`;
+}
+function atualizarZap() { $("#zapTopo").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(textoZap())}`; }
+$("#enviar").addEventListener("click", async () => {
+  const nome = $("#nome").value.trim(), whats = $("#whats").value.replace(/\D/g, "");
+  if (nome.length < 2) return mostrar("#erroDados", "Escreva seu nome.");
+  if (whats.length < 10) return mostrar("#erroDados", "Confira o WhatsApp com DDD.");
+  if (!$("#lgpd").checked) return mostrar("#erroDados", "Marque a autorização de uso das fotos para continuar.");
+  mostrar("#erroDados", ""); const btn = $("#enviar"); btn.disabled = true; btn.textContent = "Enviando…";
+  let numero = null;
+  if (SUPA_URL) {
+    try {
+      const r = await fetch(`${SUPA_URL}/functions/v1/pedido`, {
+        method: "POST", headers: { "Content-Type": "application/json", apikey: SUPA_ANON, Authorization: `Bearer ${SUPA_ANON}` },
+        body: JSON.stringify({ sessao, tema: estado.tema, pessoas: +selP.value, pets: +$("#pets").value, acabamento: $("#acab").value, nome, whatsapp: whats, cidade: $("#cidade").value, cep: $("#cep").value, observacoes: $("#obs").value, previa: estado.previa, consentimento: true }),
+      });
+      const d = await r.json(); if (r.ok) numero = d.numero;
+    } catch {}
+  }
+  btn.disabled = false; btn.textContent = "Enviar pedido";
+  $("#numero").textContent = numero ? `nº ${numero}` : "";
+  $("#zapFim").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(textoZap(numero) + `\n• Nome: ${nome}${$("#cidade").value ? `\n• Cidade: ${$("#cidade").value}` : ""}${numero ? "" : "\nVou mandar as fotos por aqui."}`)}`;
+  ir(5);
+});
+
+pintarTema(); pintarPreco(); ir(1);
+</script>
+</body>
+</html>
