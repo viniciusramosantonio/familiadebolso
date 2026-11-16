@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Família de Bolso · sua família em miniatura</title>
+<meta name="description" content="Miniaturas personalizadas da sua família, feitas a partir de fotos e impressas em 3D. Presente de Natal a partir de R$ 149.">
+<meta property="og:title" content="Família de Bolso · sua família em miniatura">
+<meta property="og:description" content="Miniaturas personalizadas feitas a partir de fotos. A partir de R$ 149. Vagas limitadas para o Natal.">
+<meta property="og:image" content="img/compartilhar.png">
+<meta name="theme-color" content="#E2725B">
+<link rel="icon" href="img/icone.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="marca.js"></script>
+<style>
+  :root{--creme:#FFF6EC;--areia:#F7E3CF;--terra:#E2725B;--terra2:#C65A44;--azul:#2B2D42;--cinza:#5B5E78;--amarelo:#F6C453}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Nunito,system-ui,sans-serif;background:var(--creme);color:var(--azul);line-height:1.5;font-size:17px}
+  h1,h2,h3,.marca{font-family:Fredoka,system-ui,sans-serif;line-height:1.05}
+  a{color:inherit}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+  .marca{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px;text-decoration:none}
+  .marca svg{width:44px;height:44px}
+  .btn{display:inline-flex;align-items:center;gap:10px;background:var(--terra);color:#fff;font-family:Fredoka;font-weight:600;font-size:19px;padding:14px 26px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;transition:transform .15s,background .15s}
+  .btn:hover{background:var(--terra2);transform:translateY(-2px)}
+  .btn.claro{background:#fff;color:var(--azul)}
+  .hero{position:relative;padding:40px 0 30px;text-align:center}
+  .hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(#E2725B22 2px,transparent 2px);background-size:28px 28px;z-index:-1}
+  .tag{display:inline-block;background:var(--terra);color:#fff;font-family:Fredoka;font-weight:600;border-radius:999px;padding:6px 16px;font-size:15px}
+  .hero h1{font-size:clamp(42px,9vw,84px);margin:18px 0 12px}
+  .hero h1 span{color:var(--terra)}
+  .hero p{font-size:clamp(17px,2.4vw,21px);color:var(--cinza);font-weight:700;max-width:560px;margin:0 auto 24px}
+  .familia{display:flex;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin:26px auto 0;max-width:960px}
+  .familia>div{width:clamp(96px,14vw,150px)}
+  section{padding:56px 0}
+  h2{font-size:clamp(32px,5vw,48px);margin-bottom:24px}
+  .passos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  .passo{background:#fff;border-radius:24px;padding:22px;box-shadow:0 8px 24px #2B2D4212}
+  .passo .ic{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:12px}
+  .passo h3{font-size:22px;margin-bottom:4px}
+  .passo p{color:var(--cinza);font-weight:700;font-size:16px}
+  .amostra{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:36px;align-items:center}
+  .amostra img{width:100%;border-radius:28px;border:10px solid #fff;box-shadow:0 20px 40px #2B2D4225;transform:rotate(-2deg)}
+  .amostra ul{list-style:none;margin-top:12px}
+  .amostra li{padding:8px 0 8px 34px;position:relative;font-weight:700}
+  .amostra li::before{content:"✓";position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--amarelo);text-align:center;font-size:14px;line-height:24px}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 8px 24px #2B2D4212;font-size:18px}
+  th,td{padding:16px 18px;text-align:left}
+  th{font-family:Fredoka;color:var(--terra);font-weight:600}
+  tr+tr td{border-top:2px dashed var(--areia)}
+  td:not(:first-child){font-weight:800}
+  .obs{margin-top:14px;color:var(--cinza);font-weight:700}
+  .orc{background:var(--terra);color:#fff;border-radius:32px;padding:34px 26px;position:relative;overflow:hidden}
+  .orc h2{color:#fff}
+  .campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:8px 0 22px}
+  label{font-weight:800;font-size:15px;display:block;margin-bottom:6px}
+  select,input{width:100%;font:inherit;font-weight:700;padding:12px 14px;border-radius:14px;border:0;color:var(--azul);background:#fff}
+  .total{font-family:Fredoka;font-size:30px;font-weight:600;margin-bottom:6px}
+  .total small{font-size:18px;font-family:Nunito;font-weight:800;opacity:.9}
+  .vagas{display:inline-block;background:var(--amarelo);color:var(--azul);font-family:Fredoka;font-weight:600;padding:6px 14px;border-radius:12px;margin-bottom:14px}
+  details{background:#fff;border-radius:18px;padding:16px 20px;margin-bottom:10px;box-shadow:0 6px 18px #2B2D420f}
+  summary{font-weight:800;cursor:pointer}
+  details p{margin-top:8px;color:var(--cinza);font-weight:700}
+  footer{padding:40px 0 60px;text-align:center;color:var(--cinza);font-weight:700}
+  .flutua{position:fixed;right:16px;bottom:16px;z-index:5;box-shadow:0 10px 24px #2B2D4240}
+  @media (max-width:640px){.amostra{grid-template-columns:1fr}.amostra img{max-width:260px;margin:0 auto;display:block}header .btn{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="marca" href="#"><span id="logo1"></span>Família de Bolso</a>
+    <a class="btn" data-wa href="#">💬 Fazer pedido</a>
+  </header>
+</div>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="tag">🎄 presente de Natal</span>
+    <h1>Sua família<br><span>em miniatura</span></h1>
+    <p>Figuras personalizadas de ~7 cm feitas a partir das suas fotos. Vó, vô, casal, filhos e até o pet.</p>
+    <a class="btn" href="#orcamento">Quero a minha</a>
+    <div class="familia" id="familia"></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>Como funciona</h2>
+    <div class="passos">
+      <div class="passo"><div class="ic" style="background:#F6C453">📸</div><h3>1. Você manda as fotos</h3><p>Uma de frente e uma de lado de cada pessoa, pelo WhatsApp.</p></div>
+      <div class="passo"><div class="ic" style="background:#F4A6A6">🖥️</div><h3>2. Prévia em 3D</h3><p>Você vê e aprova o modelo antes de imprimir.</p></div>
+      <div class="passo"><div class="ic" style="background:#9FC9A2">🖨️</div><h3>3. Impressão e acabamento</h3><p>Impressa em resina e finalizada à mão: cinza ou pintada.</p></div>
+      <div class="passo"><div class="ic" style="background:#E2725B">🎁</div><h3>4. Chega pra você</h3><p>Entrega em mãos ou pelos Correios.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--areia)">
+  <div class="wrap amostra">
+    <img src="img/amostra.png" alt="Miniatura real de uma senhora de óculos, impressa em 3D, na palma da mão">
+    <div>
+      <h2>Do tamanho da palma da mão</h2>
+      <p style="font-weight:700;color:var(--cinza)">Essa é uma amostra real, na cor da resina. Cada figura tem os detalhes que fazem a pessoa ser ela: os óculos, o cabelo, a roupa, aquele jeitinho.</p>
+      <ul><li>~7 cm de altura, com base</li><li>Feita a partir das suas fotos</li><li>Prévia para aprovar antes de imprimir</li><li>Cinza ou pintada à mão</li></ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Valores</h2>
+    <table>
+      <tr><th></th><th>Cinza</th><th>Pintada à mão</th></tr>
+      <tr><td>1 pessoa</td><td>R$ 149</td><td>R$ 229</td></tr>
+      <tr><td>Casal</td><td>R$ 279</td><td>R$ 429</td></tr>
+      <tr><td>Pet (adicional)</td><td>R$ 99</td><td>R$ 149</td></tr>
+    </table>
+    <p class="obs">Reserva com 50% no Pix e o restante na entrega. Frete à parte.</p>
+  </div>
+</section>
+
+<section id="orcamento">
+  <div class="wrap">
+    <div class="orc">
+      <span class="vagas">⏳ 10 vagas para entregar antes do Natal</span>
+      <h2>Monte o seu pedido</h2>
+      <div class="campos">
+        <div><label for="pessoas">Pessoas</label><select id="pessoas"><option value="1">1 pessoa</option><option value="2" selected>Casal (2)</option><option value="3">3 pessoas</option><option value="4">4 pessoas</option><option value="5">5 pessoas</option><option value="6">6 pessoas</option></select></div>
+        <div><label for="pets">Pets</label><select id="pets"><option value="0">Nenhum</option><option value="1">1 pet</option><option value="2">2 pets</option></select></div>
+        <div><label for="acab">Acabamento</label><select id="acab"><option value="cinza">Cinza</option><option value="pintada" selected>Pintada à mão</option></select></div>
+      </div>
+      <div class="total" id="total"></div>
+      <p style="font-weight:800;margin-bottom:20px" id="sinal"></p>
+      <a class="btn claro" id="enviar" data-wa href="#">💬 Enviar pedido pelo WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:10px">
+  <div class="wrap">
+    <h2>Dúvidas</h2>
+    <details><summary>Quanto tempo leva?</summary><p>Cada miniatura leva cerca de um dia de trabalho. Por isso as vagas para o Natal são limitadas: reserve cedo.</p></details>
+    <details><summary>Que fotos eu preciso mandar?</summary><p>Uma de frente e uma de lado de cada pessoa, com boa luz e o rosto bem visível. Se puder, conte um detalhe marcante (óculos, roupa favorita, um objeto).</p></details>
+    <details><summary>E se eu não gostar?</summary><p>Antes de imprimir você recebe uma prévia em 3D e pode pedir ajustes. Só imprimimos depois da sua aprovação.</p></details>
+    <details><summary>Como pago?</summary><p>50% no Pix para reservar a vaga e o restante quando a miniatura ficar pronta.</p></details>
+    <details><summary>Vocês entregam onde?</summary><p>Entrega em mãos combinada ou envio pelos Correios para todo o Brasil (frete à parte).</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="marca" style="justify-content:center;margin-bottom:8px"><span id="logo2"></span>Família de Bolso</div>
+  miniaturas personalizadas · <a href="https://instagram.com/familiadebolso" target="_blank" rel="noopener">@familiadebolso</a>
+</footer>
+
+<a class="btn flutua" data-wa href="#" aria-label="Falar no WhatsApp">💬</a>
+
+<script>
+  // >>> CONFIGURE AQUI o número do WhatsApp da marca (DDI + DDD + número, só dígitos)
+  const WHATSAPP = "5511976972589";
+
+  document.getElementById("logo1").innerHTML = logo();
+  document.getElementById("logo2").innerHTML = logo();
+  const F = FAMILIA;
+  document.getElementById("familia").innerHTML =
+    [F.vo(), F.vovo(), F.mae(), F.pai(), F.filha(), F.dog()].map(s => `<div>${s}</div>`).join("");
+
+  const preco = { cinza: { p: 149, casal: 279, pet: 99 }, pintada: { p: 229, casal: 429, pet: 149 } };
+  const brl = v => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  function calcular() {
+    const n = +pessoas.value, pets = +document.getElementById("pets").value, a = acab.value, t = preco[a];
+    const valor = Math.floor(n / 2) * t.casal + (n % 2) * t.p + pets * t.pet;
+    document.getElementById("total").innerHTML = `${brl(valor)} <small>total</small>`;
+    document.getElementById("sinal").textContent = `Reserva: ${brl(valor / 2)} no Pix · restante na entrega`;
+    const msg = `Olá! Quero fazer uma Família de Bolso 🎁\n• Pessoas: ${n}\n• Pets: ${pets}\n• Acabamento: ${a === "cinza" ? "cinza" : "pintada à mão"}\n• Valor pelo site: ${brl(valor)}\nPosso mandar as fotos?`;
+    document.getElementById("enviar").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  }
+  const geral = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Olá! Vi o site da Família de Bolso e quero saber mais 😊")}`;
+  document.querySelectorAll("[data-wa]").forEach(a => { if (a.id !== "enviar") a.href = geral; a.target = "_blank"; a.rel = "noopener"; });
+  ["pessoas", "pets", "acab"].forEach(id => document.getElementById(id).addEventListener("change", calcular));
+  calcular();
+</script>
+</body>
+</html>
