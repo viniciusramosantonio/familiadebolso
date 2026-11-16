@@ -69,6 +69,12 @@
   .msg.on{display:block}
   .msg.erro{background:#FDE3DD;color:#9B2C17}
   .msg.info{background:#FFF1C7;color:#6B4E00}
+  .figu{margin-top:16px;display:grid;gap:10px;text-align:center}
+  .figu[hidden],.figu [hidden]{display:none}
+  .figu .btn{justify-self:center}
+  .figu .xadrez{width:200px;height:200px;margin:4px auto 0;border-radius:16px;background:#0b6b4f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Crect width='10' height='10' fill='%23ffffff14'/%3E%3Crect x='10' y='10' width='10' height='10' fill='%23ffffff14'/%3E%3C/svg%3E")}
+  .figu .xadrez img{width:100%;height:100%}
+  .figu ol{text-align:left;margin:0 auto;padding-left:22px;font-size:15px;max-width:340px}
   .check{display:flex;gap:10px;align-items:flex-start;font-weight:700;font-size:14px}
   .check input{width:22px;height:22px;flex:none;margin-top:2px}
   details{background:#fff;border-radius:16px;padding:12px 16px;margin-bottom:8px}
@@ -127,6 +133,12 @@
       <button class="btn sec" data-ir="2">← Trocar fotos</button>
       <button class="btn sec" id="outra">↻ Gerar outra</button>
       <button class="btn" data-ir="4">Gostei, continuar →</button>
+    </div>
+    <div class="card figu" id="figuCard" hidden>
+      <b>🎁 Brinde: sua prévia vira figurinha de WhatsApp</b>
+      <div class="aviso">É de graça, mesmo que você não feche o pedido.</div>
+      <button class="btn sec" id="figuBtn" type="button">Quero minha figurinha</button>
+      <div id="figuRes"></div>
     </div>
     <details><summary>A miniatura vai ficar igual à prévia?</summary><p>A prévia é um rascunho automático. O modelo de verdade é ajustado à mão a partir das suas fotos, e você recebe para aprovar (e pedir ajustes) antes de pagar.</p></details>
     <details><summary>Qual o tamanho?</summary><p>Cerca de 4 cm de altura cada pessoa, com base. Cabe na palma da mão.</p></details>
@@ -261,7 +273,7 @@ $("#paraPrevia").addEventListener("click", () => {
 /* ---------- etapa 3: prévia ---------- */
 const carregando = `<div><div class="girando"></div><b>Criando sua miniatura…</b><div class="aviso">leva uns 20 segundos</div></div>`;
 async function gerar() {
-  mostrar("#msgPrevia", ""); $("#outra").disabled = true; $("#previa").innerHTML = carregando;
+  mostrar("#msgPrevia", ""); $("#outra").disabled = true; $("#previa").innerHTML = carregando; $("#figuCard").hidden = true;
   if (!SUPA_URL) { $("#previa").innerHTML = `<div><b>Prévia automática em breve 🙂</b><div class="aviso">Siga para enviar o pedido: você recebe o modelo para aprovar no WhatsApp.</div></div>`; return; }
   try {
     const r = await fetch(`${SUPA_URL}/functions/v1/previa`, {
@@ -274,6 +286,7 @@ async function gerar() {
     estado.previa = d.arquivo; estado.previaImg = `data:${d.tipo};base64,${d.imagem}`;
     $("#previa").innerHTML = `<span class="selo">rascunho IA</span><img src="${estado.previaImg}" alt="Prévia da sua miniatura">`;
     $("#outra").disabled = d.restantes <= 0;
+    $("#figuCard").hidden = false; $("#figuBtn").hidden = false; $("#figuBtn").disabled = false; $("#figuRes").innerHTML = "";
     if (d.restantes <= 0) mostrar("#msgPrevia", "Essa foi a última prévia de hoje. O modelo final é ajustado à mão, então pode seguir tranquilo!");
   } catch (e) {
     $("#previa").innerHTML = `<div><b>Não consegui gerar a prévia agora 😕</b><div class="aviso">Pode tentar de novo ou seguir com o pedido: o modelo de verdade é feito à mão e você aprova antes de pagar.</div></div>`;
@@ -281,6 +294,121 @@ async function gerar() {
   }
 }
 $("#outra").addEventListener("click", gerar);
+
+/* ---------- figurinha de WhatsApp (brinde) ----------
+   O servidor devolve a mesma prévia com fundo verde. Aqui o verde vira só o molde do recorte e as cores vêm
+   da prévia original (o fundo verde deixa reflexo esverdeado na pele). Saída: 512x512, contorno branco. */
+const carregar = (src) => new Promise((ok, erro) => { const i = new Image(); i.onload = () => ok(i); i.onerror = erro; i.src = src; });
+function morfologia(a, w, h, r, max) {
+  const t = new Uint8ClampedArray(a.length), o = new Uint8ClampedArray(a.length);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let v = max ? 0 : 255;
+    for (let k = -r; k <= r; k++) { const xx = Math.min(w - 1, Math.max(0, x + k)), c = a[y * w + xx]; v = max ? Math.max(v, c) : Math.min(v, c); }
+    t[y * w + x] = v;
+  }
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let v = max ? 0 : 255;
+    for (let k = -r; k <= r; k++) { const yy = Math.min(h - 1, Math.max(0, y + k)), c = t[yy * w + x]; v = max ? Math.max(v, c) : Math.min(v, c); }
+    o[y * w + x] = v;
+  }
+  return o;
+}
+async function montarFigurinha(previaSrc, verdeSrc) {
+  const S = 640, LADO = 512, MARGEM = 16, BORDA = 12;
+  const [orig, verde] = await Promise.all([carregar(previaSrc), carregar(verdeSrc)]);
+  const c = document.createElement("canvas"); c.width = c.height = S;
+  const g = c.getContext("2d", { willReadFrequently: true });
+  g.drawImage(verde, 0, 0, S, S);
+  const v = g.getImageData(0, 0, S, S).data;
+  // apaga o verde ligado às bordas
+  let a = new Uint8ClampedArray(S * S).fill(255);
+  // "quanto o verde sobra". O fundo não é uniforme (mais fraco embaixo e de um lado), então o limite de cada
+  // pixel é 85% do verde das bordas daquela linha, interpolado entre a esquerda e a direita. O reflexo verde
+  // em peça branca (embaixo do chapéu do chef) fica abaixo disso e não some.
+  const dom = (i) => v[i * 4 + 1] - Math.max(v[i * 4], v[i * 4 + 2]);
+  const eVerde = (i) => {
+    const x = i % S, y = (i / S) | 0, esq = dom(y * S), dir = dom(y * S + S - 1);
+    return dom(i) > Math.max(25, 0.85 * (esq + (dir - esq) * x / (S - 1)));
+  };
+  const pilha = [];
+  for (let i = 0; i < S; i++) pilha.push(i, (S - 1) * S + i, i * S, i * S + S - 1);
+  while (pilha.length) {
+    const i = pilha.pop();
+    if (!a[i] || !eVerde(i)) continue;
+    a[i] = 0; const x = i % S, y = (i / S) | 0;
+    if (x > 0) pilha.push(i - 1); if (x < S - 1) pilha.push(i + 1); if (y > 0) pilha.push(i - S); if (y < S - 1) pilha.push(i + S);
+  }
+  // fica só com a figura: descarta manchinhas soltas de fundo (peças com menos de 10% da maior)
+  const rot = new Int32Array(S * S), tam = [0];
+  for (let i = 0; i < S * S; i++) {
+    if (!a[i] || rot[i]) continue;
+    const n = tam.length, p = [i]; rot[i] = n; let t = 0;
+    while (p.length) {
+      const j = p.pop(); t++; const x = j % S;
+      for (const k of [x > 0 ? j - 1 : -1, x < S - 1 ? j + 1 : -1, j - S, j + S])
+        if (k >= 0 && k < S * S && a[k] && !rot[k]) { rot[k] = n; p.push(k); }
+    }
+    tam.push(t);
+  }
+  const maior = Math.max(...tam);
+  for (let i = 0; i < S * S; i++) if (a[i] && tam[rot[i]] < maior * 0.1) a[i] = 0;
+  a = morfologia(morfologia(a, S, S, 3, true), S, S, 3, false); // fecha frestas finas
+  a = morfologia(a, S, S, 1, false);                             // tira a franja verde
+  // figura com as cores da prévia original
+  g.clearRect(0, 0, S, S); g.drawImage(orig, 0, 0, S, S);
+  const img = g.getImageData(0, 0, S, S);
+  let x0 = S, y0 = S, x1 = 0, y1 = 0;
+  for (let i = 0; i < S * S; i++) {
+    img.data[i * 4 + 3] = a[i];
+    if (a[i]) { const x = i % S, y = (i / S) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  }
+  if (x1 <= x0) throw new Error("recorte vazio");
+  g.putImageData(img, 0, 0);
+  // contorno branco: a silhueta engordada, pintada de branco, por baixo da figura
+  const W = x1 - x0 + 1 + 2 * BORDA, H = y1 - y0 + 1 + 2 * BORDA;
+  const fig = document.createElement("canvas"); fig.width = W; fig.height = H;
+  const f = fig.getContext("2d");
+  const m = new Uint8ClampedArray(W * H);
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) m[(y - y0 + BORDA) * W + (x - x0 + BORDA)] = a[y * S + x];
+  const contorno = morfologia(m, W, H, BORDA, true), cd = f.createImageData(W, H);
+  for (let i = 0; i < W * H; i++) { cd.data[i * 4] = cd.data[i * 4 + 1] = cd.data[i * 4 + 2] = 255; cd.data[i * 4 + 3] = contorno[i]; }
+  f.putImageData(cd, 0, 0);
+  f.drawImage(c, x0, y0, x1 - x0 + 1, y1 - y0 + 1, BORDA, BORDA, x1 - x0 + 1, y1 - y0 + 1);
+  const out = document.createElement("canvas"); out.width = out.height = LADO;
+  const k = Math.min((LADO - 2 * MARGEM) / W, (LADO - 2 * MARGEM) / H);
+  out.getContext("2d").drawImage(fig, (LADO - W * k) / 2, (LADO - H * k) / 2, W * k, H * k);
+  // WebP é o formato das figurinhas; o Safari não gera WebP, então lá sai PNG (o WhatsApp aceita também)
+  const blob = await new Promise((ok) => out.toBlob(ok, "image/webp", 0.9));
+  return blob.type === "image/webp" ? blob : await new Promise((ok) => out.toBlob(ok, "image/png"));
+}
+$("#figuBtn").addEventListener("click", async () => {
+  const btn = $("#figuBtn"); btn.disabled = true; btn.textContent = "Fazendo sua figurinha…";
+  const fim = (html) => { btn.hidden = true; $("#figuRes").innerHTML = html; };
+  try {
+    const r = await fetch(`${SUPA_URL}/functions/v1/figurinha`, {
+      method: "POST", headers: { "Content-Type": "application/json", apikey: SUPA_ANON, Authorization: `Bearer ${SUPA_ANON}` },
+      body: JSON.stringify({ sessao, arquivo: estado.previa }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 429) return fim(`<div class="aviso">As figurinhas de hoje acabaram 🙂 Peça a sua pelo WhatsApp que a gente manda.</div>`);
+    if (r.status === 409) return fim(`<div class="aviso">Essa prévia já virou figurinha. Gere outra prévia para ganhar outra.</div>`);
+    if (!r.ok || !d.verde) throw new Error(d.erro || r.status);
+    const blob = await montarFigurinha(estado.previaImg, `data:${d.tipo};base64,${d.verde}`);
+    const nome = `figurinha-familia-de-bolso.${blob.type === "image/webp" ? "webp" : "png"}`;
+    const url = URL.createObjectURL(blob), arq = new File([blob], nome, { type: blob.type });
+    const podeCompartilhar = navigator.canShare && navigator.canShare({ files: [arq] });
+    fim(`<div class="xadrez"><img src="${url}" alt="Sua figurinha"></div>
+      <div class="acoes" style="justify-content:center">
+        <a class="btn" href="${url}" download="${nome}">⬇️ Salvar figurinha</a>
+        ${podeCompartilhar ? `<button class="btn sec" id="figuShare" type="button">Compartilhar</button>` : ""}
+      </div>
+      <ol><li>Salve a imagem no celular.</li><li>No WhatsApp, abra qualquer conversa e toque no 😊 → <b>Figurinhas</b> → <b>Criar</b>.</li><li>Escolha a imagem salva e envie. Depois toque nela e salve nas favoritas.</li></ol>`);
+    if (podeCompartilhar) $("#figuShare").addEventListener("click", () => navigator.share({ files: [arq] }).catch(() => {}));
+  } catch (e) {
+    btn.disabled = false; btn.textContent = "Tentar de novo";
+    $("#figuRes").innerHTML = `<div class="aviso">Não consegui fazer a figurinha agora. Tente de novo em instantes.</div>`;
+  }
+});
 
 /* ---------- etapa 4: dados ---------- */
 function montarResumo() {
