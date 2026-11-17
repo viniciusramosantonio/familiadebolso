@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Abrindo o WhatsApp · Família de Bolso</title>
+<meta name="theme-color" content="#E2725B">
+<link rel="icon" href="img/icone.png">
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#FFF6EC;color:#2B2D42;font:700 17px/1.5 Nunito,system-ui,sans-serif;text-align:center;padding:16px;box-sizing:border-box}
+  a{display:inline-block;margin-top:14px;background:#25D366;color:#fff;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:999px}
+  .erro{color:#C65A44}
+</style>
+</head>
+<body>
+<div id="msg">Abrindo o WhatsApp…</div>
+<script>
+// Link curto dos avisos de pedido: ?o=<token> (responder o cliente) ou ?c=<token> (cobrança Pix).
+(async () => {
+  const q = new URLSearchParams(location.search), msg = document.getElementById("msg");
+  const acao = q.has("c") ? "cobrar" : "oi", t = q.get("c") || q.get("o") || "";
+  const falha = (txt) => { msg.innerHTML = `<span class="erro">${txt}</span>`; };
+  if (!/^[a-f0-9]{32}$/.test(t)) return falha("Link incompleto.");
+  try {
+    const r = await fetch("https://uybqzetlkuketfqucjei.supabase.co/functions/v1/pagar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: "sb_publishable_mR4eMLN4y_KAfgbFlH0hrA_yzsxQ7bs",
+                 Authorization: "Bearer sb_publishable_mR4eMLN4y_KAfgbFlH0hrA_yzsxQ7bs" },
+      body: JSON.stringify({ t, acao }),
+    });
+    const d = await r.json();
+    if (!r.ok || !d.url) return falha(d.erro === "pedido cancelado" ? "Este pedido foi cancelado." : "Pedido não encontrado.");
+    msg.innerHTML = `Abrindo o WhatsApp…<br><a href="${d.url.replace(/"/g, "&quot;")}">Abrir conversa</a>`;
+    location.replace(d.url);
+  } catch { falha("Não deu para carregar. Tente de novo."); }
+})();
+</script>
+</body>
+</html>
