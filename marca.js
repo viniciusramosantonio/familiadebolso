@@ -83,6 +83,7 @@ const FAMILIA = {
   dog:  () => pet({})
 };
 
+
 function logo(o = {}) {
   const pele = o.pele || PELES.media;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" class="logo-svg">

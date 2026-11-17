@@ -9,7 +9,7 @@
 <link rel="icon" href="img/icone.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
-<script src="marca.js"></script>
+<script src="marca.js?v=2"></script>
 <script src="temas.js"></script>
 <style>
   :root{--creme:#FFF6EC;--areia:#F7E3CF;--terra:#E2725B;--terra2:#C65A44;--azul:#2B2D42;--cinza:#5B5E78;--amarelo:#F6C453;--verde:#3E8E5E}
@@ -77,6 +77,18 @@
   .previa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .selo{position:absolute;left:12px;top:12px;background:var(--amarelo);font-family:Fredoka;font-weight:600;font-size:13px;padding:4px 10px;border-radius:10px;z-index:2}
   .girando{width:64px;height:64px;border-radius:50%;border:6px solid #fff;border-top-color:var(--terra);animation:gira 1s linear infinite;margin:0 auto 14px}
+  /* "criando sua miniatura": boneco gira 360º e ganha cor de cima para baixo; a cada volta, outro boneco */
+  .forja{position:relative;width:150px;height:202px;margin:0 auto 12px;perspective:700px}
+  .forja .boneco{position:absolute;inset:0;transform-style:preserve-3d;animation:forja-gira 3.2s cubic-bezier(.45,0,.3,1) infinite}
+  .forja .camada{position:absolute;inset:0}
+  .forja .camada img{width:100%;height:100%;display:block;object-fit:contain;object-position:center bottom}
+  .forja .cinza{filter:grayscale(1) brightness(1.05) contrast(.85)}
+  .forja .cor{clip-path:inset(0 0 100% 0);animation:forja-cor 3.2s linear infinite}
+  .forja .luz{position:absolute;left:4%;right:4%;height:4px;border-radius:4px;background:linear-gradient(90deg,transparent,#fff 30%,#fff 70%,transparent);box-shadow:0 0 14px 4px #fff8;animation:forja-luz 3.2s linear infinite;pointer-events:none}
+  @keyframes forja-gira{0%{transform:rotateY(0) scale(.95)}72%{transform:rotateY(360deg) scale(1)}82%{transform:rotateY(360deg) scale(1.07)}92%,100%{transform:rotateY(360deg) scale(1)}}
+  @keyframes forja-cor{0%{clip-path:inset(0 0 100% 0)}72%,100%{clip-path:inset(0 0 0 0)}}
+  @keyframes forja-luz{0%{top:0;opacity:0}6%{opacity:1}68%{opacity:1}72%{top:calc(100% - 4px);opacity:0}100%{top:calc(100% - 4px);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.forja .boneco{animation:none}}
   @keyframes gira{to{transform:rotate(360deg)}}
   .aviso{font-size:13px;color:var(--cinza);font-weight:700;margin-top:10px}
   .msg{border-radius:14px;padding:12px 14px;font-weight:800;font-size:15px;margin-top:12px;display:none}
@@ -303,9 +315,21 @@ $("#paraPrevia").addEventListener("click", () => {
 });
 
 /* ---------- etapa 3: prévia ---------- */
-const carregando = `<div><div class="girando"></div><b>Criando sua miniatura…</b><div class="aviso">leva uns 20 segundos</div></div>`;
+const carregando = `<div><div class="forja" aria-hidden="true"><div class="boneco"><div class="camada cinza"><img alt=""></div><div class="camada cor"><img alt=""></div></div><div class="luz"></div></div><b>Criando sua miniatura…</b><div class="aviso">leva uns 20 segundos</div></div>`;
+// Bonecos (fotos de chibi recortadas, ia/criando.py) que se revezam a cada volta da animação
+const CRIANDO = ["homem", "mulher", "cachorro", "bruxa", "vovo", "menino", "astronauta", "gato"];
+function animarForja() {
+  const f = $("#previa .forja"); if (!f) return;
+  const imgs = f.querySelectorAll(".camada img");
+  CRIANDO.forEach((n) => { new Image().src = `img/criando/${n}.webp`; });  // já baixa todos
+  let i = Math.floor(Math.random() * CRIANDO.length);
+  const troca = () => { imgs.forEach((im) => { im.src = `img/criando/${CRIANDO[i % CRIANDO.length]}.webp`; }); i++; };
+  troca();
+  // o evento das camadas de dentro também sobe até aqui: só conta a volta do próprio boneco
+  f.querySelector(".boneco").addEventListener("animationiteration", (e) => { if (e.target === e.currentTarget) troca(); });
+}
 async function gerar() {
-  mostrar("#msgPrevia", ""); $("#outra").disabled = true; $("#previa").innerHTML = carregando; $("#figuCard").hidden = true;
+  mostrar("#msgPrevia", ""); $("#outra").disabled = true; $("#previa").innerHTML = carregando; animarForja(); $("#figuCard").hidden = true;
   if (!SUPA_URL) { $("#previa").innerHTML = `<div><b>Prévia automática em breve 🙂</b><div class="aviso">Siga para enviar o pedido: você recebe o modelo para aprovar no WhatsApp.</div></div>`; return; }
   try {
     const r = await fetch(`${SUPA_URL}/functions/v1/previa`, {
