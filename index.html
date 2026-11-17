@@ -96,6 +96,23 @@
   a.card{text-decoration:none;color:inherit;transition:transform .15s}
   a.card:hover{transform:translateY(-3px)}
   .card .quero{font-weight:800;font-size:14px;color:var(--terra)}
+  .card .zoom{position:relative;border:0;padding:0;background:none;cursor:zoom-in;display:block;width:100%}
+  .card .zoom::after{content:"";position:absolute;right:8px;bottom:8px;width:30px;height:30px;border-radius:50%;background:#fffd url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B2D42' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6'/%3E%3Cpath d='M15 15l5 5M10.5 8v5M8 10.5h5'/%3E%3C/svg%3E") center/18px no-repeat;box-shadow:0 2px 6px #2B2D4230}
+  .card a.info{text-decoration:none;color:inherit}
+  /* modal da imagem maior */
+  #zoomModal{border:0;padding:0;background:transparent;max-width:min(92vw,620px);width:100%;margin:auto;overflow:visible}
+  #zoomModal::backdrop{background:#2B2D42d9}
+  #zoomModal .caixa{background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 20px 50px #0006}
+  #zoomModal img{width:100%;aspect-ratio:1;object-fit:contain;display:block;background:var(--areia)}
+  #zoomModal .rodape{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px 16px;flex-wrap:wrap}
+  #zoomModal .rodape b{font-family:Fredoka;font-weight:600;font-size:22px}
+  #zoomModal .rodape a{background:var(--terra);color:#fff;text-decoration:none;font-family:Fredoka;font-weight:600;font-size:17px;padding:10px 20px;border-radius:999px}
+  #zoomModal .fechar,#zoomModal .nav{position:absolute;border:0;border-radius:50%;background:#fff;color:var(--azul);font-size:24px;line-height:1;width:44px;height:44px;cursor:pointer;box-shadow:0 4px 12px #0004;display:flex;align-items:center;justify-content:center}
+  #zoomModal .fechar{top:-14px;right:-10px}
+  #zoomModal .nav{top:calc(50% - 60px)}
+  #zoomModal .ant{left:-14px}
+  #zoomModal .prox{right:-14px}
+  @media (max-width:520px){#zoomModal .ant{left:6px}#zoomModal .prox{right:6px}#zoomModal .fechar{right:6px;top:6px}}
   .aviso{margin-top:14px;font-size:14px;color:var(--cinza);font-weight:700}
   .ig{display:inline-flex;align-items:center;gap:8px;font-weight:800;text-decoration:none;color:var(--azul)}
   .ig svg{width:26px;height:26px;flex:none}
@@ -167,6 +184,16 @@
     <p class="aviso">Imagens ilustrativas geradas por IA. Cada miniatura é modelada a partir das suas fotos.</p>
   </div>
 </section>
+
+<dialog id="zoomModal" aria-label="Imagem do tema">
+  <div class="caixa">
+    <img id="zoomImg" alt="">
+    <div class="rodape"><b id="zoomTitulo"></b><a id="zoomQuero" href="pedido.html">Quero esse tema →</a></div>
+  </div>
+  <button class="fechar" aria-label="Fechar">✕</button>
+  <button class="nav ant" aria-label="Tema anterior">‹</button>
+  <button class="nav prox" aria-label="Próximo tema">›</button>
+</dialog>
 
 <section style="background:var(--areia)">
   <div class="wrap amostra">
@@ -268,11 +295,34 @@
   const abas = document.getElementById("abas"), grade = document.getElementById("grade");
   function mostrar(cat) {
     [...abas.children].forEach(b => b.setAttribute("aria-selected", b.textContent === cat));
-    grade.innerHTML = T.filter(t => cat === "Todos" || t.cat === cat).map(t => {
-      return `<a class="card" href="pedido.html?tema=${t.id}"><img loading="lazy" src="img/temas/${t.id}.webp" alt="Miniatura chibi tema ${t.titulo}">
-        <div><b>${t.titulo}</b><span class="quero">Quero esse tema →</span></div></a>`;
+    lista = T.filter(t => cat === "Todos" || t.cat === cat);
+    grade.innerHTML = lista.map((t, i) => {
+      return `<div class="card"><button class="zoom" data-i="${i}" aria-label="Ver maior: ${t.titulo}"><img loading="lazy" src="img/temas/${t.id}.webp" alt="Miniatura chibi tema ${t.titulo}"></button>
+        <a class="info" href="pedido.html?tema=${t.id}"><div><b>${t.titulo}</b><span class="quero">Quero esse tema →</span></div></a></div>`;
     }).join("");
   }
+  // Modal: toca na imagem → abre maior; setas/arrastar passam para o próximo tema da aba
+  let lista = [], atual = 0;
+  const modal = document.getElementById("zoomModal"), zImg = document.getElementById("zoomImg");
+  function abrirZoom(i) {
+    atual = (i + lista.length) % lista.length;
+    const t = lista[atual];
+    zImg.src = `img/temas/${t.id}.webp`;  // a pequena já está em cache: aparece na hora
+    const g = new Image(); g.onload = () => { if (lista[atual] === t) zImg.src = g.src; }; g.src = `img/temas-g/${t.id}.webp`;
+    zImg.alt = `Miniatura chibi tema ${t.titulo}`;
+    document.getElementById("zoomTitulo").textContent = t.titulo;
+    document.getElementById("zoomQuero").href = `pedido.html?tema=${t.id}`;
+    if (!modal.open) modal.showModal();
+  }
+  grade.addEventListener("click", e => { const b = e.target.closest(".zoom"); if (b) abrirZoom(+b.dataset.i); });
+  modal.querySelector(".fechar").onclick = () => modal.close();
+  modal.querySelector(".ant").onclick = () => abrirZoom(atual - 1);
+  modal.querySelector(".prox").onclick = () => abrirZoom(atual + 1);
+  modal.addEventListener("click", e => { if (e.target === modal) modal.close(); });  // toque fora fecha
+  modal.addEventListener("keydown", e => { if (e.key === "ArrowLeft") abrirZoom(atual - 1); if (e.key === "ArrowRight") abrirZoom(atual + 1); });
+  let x0 = null;
+  zImg.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
+  zImg.addEventListener("touchend", e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) abrirZoom(atual + (dx < 0 ? 1 : -1)); });
   abas.innerHTML = cats.map(c => `<button role="tab">${c}</button>`).join("");
   abas.addEventListener("click", e => { if (e.target.tagName === "BUTTON") mostrar(e.target.textContent); });
   mostrar("Todos");
