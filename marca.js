@@ -99,3 +99,8 @@ function logo(o = {}) {
     <path d="M120 150 c-10 -14 -30 -4 -18 12 l18 16 l18 -16 c12 -16 -8 -26 -18 -12Z" fill="${COR.amarelo}"/>
   </svg>`;
 }
+
+// Logo em foto (versão C: bonequinho saindo do bolso da camisa). O logo() em SVG fica para marca d'água.
+function logoFoto() {
+  return `<img class="logo-foto" src="img/logo.webp" alt="" width="44" height="44">`;
+}

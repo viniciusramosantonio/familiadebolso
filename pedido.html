@@ -9,7 +9,7 @@
 <link rel="icon" href="img/icone.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
-<script src="marca.js?v=2"></script>
+<script src="marca.js?v=3"></script>
 <script src="temas.js"></script>
 <style>
   :root{--creme:#FFF6EC;--areia:#F7E3CF;--terra:#E2725B;--terra2:#C65A44;--azul:#2B2D42;--cinza:#5B5E78;--amarelo:#F6C453;--verde:#3E8E5E}
@@ -19,7 +19,7 @@
   .wrap{max-width:720px;margin:0 auto;padding:0 16px}
   header{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
   .marca{display:flex;align-items:center;gap:8px;font-weight:700;font-size:20px;text-decoration:none;color:inherit}
-  .marca svg{width:40px;height:40px}
+  .marca svg,.marca .logo-foto{width:40px;height:40px}.logo-foto{border-radius:50%;object-fit:cover;box-shadow:0 2px 6px #2B2D4226}
   .zap{font-weight:800;font-size:14px;color:var(--terra);text-decoration:none}
   .topo-dir{display:flex;align-items:center;gap:14px}
   .ig{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:14px;color:var(--azul);text-decoration:none}
@@ -218,7 +218,7 @@ const WHATSAPP = "5511976972589";
 /* <<< */
 
 const $ = (s) => document.querySelector(s);
-$("#logo").innerHTML = logo();
+$("#logo").innerHTML = logoFoto();
 const TEMAS = [{ id: "livre", titulo: "Do meu jeito", cat: "" }, ...(window.TEMAS || [])];
 const PRECO = { cinza: { p: 49, casal: 89, familia: 169, pet: 39 }, pintada: { p: 89, casal: 159, familia: 299, pet: 69 } };
 const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });

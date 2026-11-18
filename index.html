@@ -14,7 +14,7 @@
 <link rel="icon" href="img/icone.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
-<script src="marca.js"></script>
+<script src="marca.js?v=3"></script>
 <script src="temas.js"></script>
 <style>
   :root{--creme:#FFF6EC;--areia:#F7E3CF;--terra:#E2725B;--terra2:#C65A44;--azul:#2B2D42;--cinza:#5B5E78;--amarelo:#F6C453}
@@ -25,7 +25,7 @@
   .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
   header{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
   .marca{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px;text-decoration:none}
-  .marca svg{width:44px;height:44px}
+  .marca svg,.marca .logo-foto{width:44px;height:44px}.logo-foto{border-radius:50%;object-fit:cover;box-shadow:0 2px 6px #2B2D4226}
   .btn{display:inline-flex;align-items:center;gap:10px;background:var(--terra);color:#fff;font-family:Fredoka;font-weight:600;font-size:19px;padding:14px 26px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;transition:transform .15s,background .15s}
   .btn:hover{background:var(--terra2);transform:translateY(-2px)}
   .btn.claro{background:#fff;color:var(--azul)}
@@ -88,6 +88,15 @@
   .abas{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:none}
   .abas button{flex:none;font:inherit;font-weight:800;font-size:15px;border:2px solid var(--terra);background:#fff;color:var(--terra);padding:8px 16px;border-radius:999px;cursor:pointer}
   .abas button[aria-selected="true"]{background:var(--terra);color:#fff}
+  .mundos{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+  .mundos button{font:inherit;text-align:left;border:2px solid #2B2D4218;background:#fff;color:var(--azul);border-radius:22px;padding:16px 18px;cursor:pointer;transition:.15s}
+  .mundos button b{display:block;font-family:Fredoka;font-weight:600;font-size:22px}
+  .mundos button span{display:block;font-size:14px;font-weight:700;color:var(--cinza);margin-top:2px}
+  .mundos button[aria-selected="true"]{border-color:var(--terra);background:#FFF1E8;box-shadow:0 6px 16px #E2725B26}
+  @media (max-width:640px){.mundos{grid-template-columns:1fr}.mundos button{padding:12px 16px}.mundos button b{font-size:19px}}
+  .empresa{margin-top:18px;background:var(--areia);border-radius:22px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;font-weight:700}
+  .empresa b{font-family:Fredoka;font-weight:600;font-size:20px;display:block}
+  .empresa .btn{padding:10px 18px;font-size:16px}
   .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
   .card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 8px 22px #2B2D4214;display:flex;flex-direction:column}
   .card img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--areia)}
@@ -177,10 +186,12 @@
 
 <section id="temas" style="padding-top:10px">
   <div class="wrap">
-    <h2>Ideias de temas</h2>
-    <p class="sub">Profissão, esporte, rotina, casal… escolha um tema e a gente faz com o rosto de quem você ama.</p>
+    <h2>Cada pedacinho da sua vida</h2>
+    <p class="sub">Família é quem caminha com você: em casa, no trabalho e na fé. Escolha o pedacinho que você quer guardar, e a gente faz com o rosto de quem você ama.</p>
+    <div class="mundos" id="mundos" role="tablist"></div>
     <div class="abas" id="abas" role="tablist"></div>
     <div class="grade" id="grade"></div>
+    <div class="empresa" id="empresa" hidden><div><b>🎁 Brinde de fim de ano para a equipe?</b>Troféu de destaque, amigo secreto ou o time inteiro, com preço por volume.</div><a class="btn" id="waEmpresa" href="#">💬 Falar sobre empresas</a></div>
     <p class="aviso">Imagens ilustrativas geradas por IA. Cada miniatura é modelada a partir das suas fotos.</p>
   </div>
 </section>
@@ -273,8 +284,8 @@
   // >>> CONFIGURE AQUI o número do WhatsApp da marca (DDI + DDD + número, só dígitos)
   const WHATSAPP = "5511976972589";
 
-  document.getElementById("logo1").innerHTML = logo();
-  document.getElementById("logo2").innerHTML = logo();
+  document.getElementById("logo1").innerHTML = logoFoto();
+  document.getElementById("logo2").innerHTML = logoFoto();
 
   const preco = { cinza: { p: 49, casal: 89, familia: 169, pet: 39 }, pintada: { p: 89, casal: 159, familia: 299, pet: 69 } };
   const brl = v => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -291,11 +302,27 @@
   // Galeria de temas
   const T = window.TEMAS || [];
   if (!T.length) document.getElementById("temas").style.display = "none";
-  const cats = ["Todos", ...new Set(T.map(t => t.cat))];
-  const abas = document.getElementById("abas"), grade = document.getElementById("grade");
+  // Três "pedacinhos da vida" (mundos) e, dentro de cada um, as categorias.
+  const MUNDOS = [["Família", "🏡", "em casa, no lazer e nas datas que importam"],
+                  ["Trabalho", "💼", "a profissão, as conquistas e a equipe"],
+                  ["Fé", "🕊️", "a igreja, o terreiro, os orixás e toda forma de fé"]];
+  const abas = document.getElementById("abas"), grade = document.getElementById("grade"), mundosEl = document.getElementById("mundos");
+  let mundo = "Família";
+  mundosEl.innerHTML = MUNDOS.map(([m, e, d]) => `<button role="tab" data-m="${m}"><b>${e} ${m}</b><span>${d}</span></button>`).join("");
+  function escolherMundo(m) {
+    mundo = m;
+    [...mundosEl.children].forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
+    const cats = ["Todos", ...new Set(T.filter(t => t.mundo === m).map(t => t.cat))];
+    abas.innerHTML = cats.length > 2 ? cats.map(c => `<button role="tab">${c}</button>`).join("") : "";
+    document.getElementById("empresa").hidden = m !== "Trabalho";
+    mostrar("Todos");
+  }
+  mundosEl.addEventListener("click", e => { const b = e.target.closest("button"); if (b) escolherMundo(b.dataset.m); });
+  document.getElementById("waEmpresa").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Olá! Quero um orçamento de brinde de fim de ano para a minha equipe 🎁")}`;
+  document.getElementById("waEmpresa").target = "_blank";
   function mostrar(cat) {
     [...abas.children].forEach(b => b.setAttribute("aria-selected", b.textContent === cat));
-    lista = T.filter(t => cat === "Todos" || t.cat === cat);
+    lista = T.filter(t => t.mundo === mundo && (cat === "Todos" || t.cat === cat));
     grade.innerHTML = lista.map((t, i) => {
       return `<div class="card"><button class="zoom" data-i="${i}" aria-label="Ver maior: ${t.titulo}"><img loading="lazy" src="img/temas/${t.id}.webp" alt="Miniatura chibi tema ${t.titulo}"></button>
         <a class="info" href="pedido.html?tema=${t.id}"><div><b>${t.titulo}</b><span class="quero">Quero esse tema →</span></div></a></div>`;
@@ -323,9 +350,8 @@
   let x0 = null;
   zImg.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
   zImg.addEventListener("touchend", e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) abrirZoom(atual + (dx < 0 ? 1 : -1)); });
-  abas.innerHTML = cats.map(c => `<button role="tab">${c}</button>`).join("");
   abas.addEventListener("click", e => { if (e.target.tagName === "BUTTON") mostrar(e.target.textContent); });
-  mostrar("Todos");
+  escolherMundo("Família");
 
   ["pessoas", "pets", "acab"].forEach(id => document.getElementById(id).addEventListener("change", calcular));
   calcular();
